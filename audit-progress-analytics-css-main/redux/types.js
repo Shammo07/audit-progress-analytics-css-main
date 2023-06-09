@@ -1,0 +1,12 @@
+export const AUTHENTICATE = 'authenticate';
+export const DEAUTHENTICATE = 'deauthenticate';
+export const SAVE_USER_RIGHT= "save_user_right";
+export const REMOVE_USER_RIGHT = "remove_user_right";
+export const SAVE_USER_NAME = "save_user_name";
+export const REMOVE_USER_NAME = "remove_user_name"
+export const SAVE_COMPANY_NAME = "save_company_name"
+export const REMOVE_COMPANY_NAME = "remove_company_name"
+export const SAVE_LOGO = "save_logo"
+export const REMOVE_LOGO = "remove_logo"
+export const SAVE_SUPER_ADMIN = "save_super_admin"
+export const REMOVE_SUPER_ADMIN = "remove_super_admin"

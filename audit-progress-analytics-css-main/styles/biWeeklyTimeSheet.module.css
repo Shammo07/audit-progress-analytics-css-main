@@ -1,0 +1,50 @@
+.dataTable {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    display: block;
+}
+
+.dataTable td, .dataTable th {
+    border: 1px solid #ddd;
+    padding: 11px;
+}
+
+/*.dataTable tr:nth-child(even){background-color: #f2f2f2;}*/
+.dataTable tbody tr:last-child input{
+}
+
+.dataTable tr:hover {
+    background-color: #ddd;
+
+}
+
+.dataTable tr{
+    box-sizing: border-box;
+    height: 50px;
+}
+
+.dataTable th {
+    border-color: rgba(0, 0, 0, 0.14);
+    box-sizing: border-box;
+    height: 50px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    color: black;
+}
+
+.small{
+    width: 30px;
+}
+
+.big{
+    min-width: 300px;
+}
+
+.stickyHeader {
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 0;
+    background-color: white;
+    border: 2px solid black;
+}

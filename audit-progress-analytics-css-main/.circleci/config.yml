@@ -1,0 +1,92 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+orbs:
+  slack: circleci/slack@4.10.1
+  aws-ecr: circleci/aws-ecr@8.1.2
+  aws-ecs: circleci/aws-ecs@3.0.0
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+jobs:
+  build-notify:
+    docker:
+      - image: 'cimg/base:stable'
+    steps:
+      - slack/notify:
+          channel: dev
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          channel: dev
+          event: pass
+          template: basic_success_1
+  test:
+    docker:
+      - image: cimg/node:16.15
+    working_directory: ~/project
+    steps:
+      - checkout
+      # look for existing cache and restore if found
+      - restore_cache:
+            key: v1-deps-{{ checksum "yarn.lock" }}
+      - run: yarn
+      - save_cache:
+            key: dependency-cache-{{ checksum "yarn.lock" }}
+            paths:
+                - ./node_modules
+      - restore_cache:
+          key: v1-deps-{{ checksum "yarn.lock" }}
+      - run: yarn --cwd ./
+      - save_cache:
+          key: dependency-cache-{{ checksum "yarn.lock" }}
+          paths:
+            - ./node_modules
+      - run: yarn --cwd ./ lint
+      - slack/notify:
+          channel: dev
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+            channel: dev
+            event: pass
+            template: basic_success_1
+workflows:
+  test:
+    jobs:
+      - test:
+          context: slack-secrets
+#  build-and-push-image:
+#    jobs:
+#        - aws-ecr/build-and-push-image: # Use the pre-defined `build-and-push-image` job
+#            name: build-and-push-image-nextjs
+#            dockerfile: Dockerfile
+#            aws-access-key-id: AWS_ACCESS_KEY_ID
+#            aws-cli-version: latest
+#            aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+#            path: ./
+#            profile-name: default
+#            repo: audit-progress-control-nextjs
+#            region: ${AWS_REGION}
+#            registry-id: AWS_ECR_REGISTRY_ID
+#            tag: 'latest'
+#            push-image: true
+#            platform: linux/amd64
+#            context: aws
+#            filters:
+#                branches:
+#                    only:
+#                        - main
+#                        - staging
+#
+#        - aws-ecs/deploy-service-update:
+#              cluster: 'web-and-api-production'
+#              container-image-name-updates: 'container=audit-progress-control-nextjs,tag=latest'
+#              family: 'audit-progress-nextjs'
+#              service-name: 'audit-progress'
+#              context: aws
+#              requires:
+#                  - build-and-push-image-nextjs
+#        - build-notify:
+#            context: slack-secrets
+#            requires:
+#                  - aws-ecs/deploy-service-update
